@@ -8,6 +8,9 @@ The game is written in C++14 using [SFML](https://github.com/SFML/SFML). C++ is 
 As a special surprise, `lemonade_stand.py` contains a rough command line version of the game! I used it to prototype the game rules. There is no parameter validation whatsoever and many things differ from the finished game.
 
 
+# Third-party Assets
+* [Comic Neue](https://github.com/crozynski/comicneue).
+
 # Building
 ## Windows
 You'll need Visual Studio 2017 (VS2015 should work as well).

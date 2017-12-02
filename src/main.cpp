@@ -1,9 +1,17 @@
+#include <memory>
 #include "SFML/Graphics.hpp"
+#include "game.h"
+#include "titlescreen.h"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1280, 720), "LD40");
-    // TODO: Timing etc. options
+    sf::RenderWindow window(sf::VideoMode(1280, 720), "(Cursed) Lemonade Stand", sf::Style::Titlebar | sf::Style::Close);
+    window.setFramerateLimit(60);
+    window.setMouseCursorVisible(false); // Mouse is not used in this game
+
+    // The title screen always exists, whereas the gameplay screen is re-created every time the game is started
+    lemonade::TitleScreen title;
+    std::unique_ptr<lemonade::Game> game;
 
     while (window.isOpen())
     {
@@ -14,9 +22,20 @@ int main()
                 window.close();
         }
 
-        // TODO: Update
-        window.clear(sf::Color(100, 149, 237, 255));
-        // TODO: Draw
+        if (!game)
+        {
+            title.update();
+            title.draw(window);
+            if (title.shouldStartGame())
+                game.reset(new lemonade::Game);
+        }
+        else
+        {
+            game->update();
+            game->draw(window);
+            if (game->isGameOver())
+                game.reset(nullptr);
+        }
         window.display();
     }
 
