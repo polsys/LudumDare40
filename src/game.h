@@ -75,6 +75,8 @@ namespace lemonade
         };
         State m_state = State::BeforePlanning;
 
+        // Helper for the Planning UI.
+        void setWeatherForecast();
         // Does the job of update() in Planning phase.
         void updatePlanning();
         // Does the work of draw() in Planning phase.
@@ -90,6 +92,8 @@ namespace lemonade
         sf::Text m_planPriceValue;
         sf::Text m_planHelp;
         sf::RectangleShape m_planSelectionRectangle;
+        sf::Texture m_forecastTexture;
+        sf::Sprite m_planForecastSprite;
 
         enum class PlanningInput
         {

@@ -36,7 +36,7 @@ void lemonade::Game::update()
 
         // Initialize the planning UI
         m_planDay.setString(k_dayNames[m_day]);
-        m_planTemperature.setString(std::to_string(m_weather) + "=???");
+        setWeatherForecast();
         m_planMoney.setString(moneyToString(m_money));
         m_planAmountValue.setString(std::to_string(m_amountAvailable));
         m_planPriceValue.setString(moneyToString(m_price));
@@ -147,6 +147,40 @@ void lemonade::Game::calculateWeather()
     m_weather = static_cast<int>(std::round(100 - 0.5f * m_potentialCustomers));
 }
 
+void lemonade::Game::setWeatherForecast()
+{
+    // The forecast:
+    if (m_weather < 10)
+    {
+        // Thunder
+        m_planForecastSprite.setTextureRect(sf::IntRect(192, 0, 64, 64));
+    }
+    else if (m_weather < 40)
+    {
+        // Rain
+        m_planForecastSprite.setTextureRect(sf::IntRect(128, 0, 64, 64));
+    }
+    else if (m_weather < 60)
+    {
+        // Partly cloudy
+        m_planForecastSprite.setTextureRect(sf::IntRect(64, 0, 64, 64));
+    }
+    else
+    {
+        // Sunny
+        m_planForecastSprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
+    }
+
+    // The temperature is calculated from the weather so that
+    //   - weather level 100 -> 30 degrees C
+    //   - weather level 0   -> 10 degrees C
+    auto celsius = static_cast<int>(std::round(m_weather / 5.0f + 5.0f));
+    if (celsius < 5)
+        celsius = 5;
+    auto fahrenheit = static_cast<int>(std::round((celsius * 9.0f / 5.0f) + 32));
+    m_planTemperature.setString(std::to_string(celsius) + " C / " + std::to_string(fahrenheit) + " F");
+}
+
 void lemonade::Game::updatePlanning()
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && (m_keyWaitFrames == 0))
@@ -211,6 +245,7 @@ void lemonade::Game::drawPlanning(sf::RenderTarget& rt)
     rt.draw(m_planSelectionRectangle);
 
     rt.draw(m_planDay);
+    rt.draw(m_planForecastSprite);
     rt.draw(m_planTemperature);
     rt.draw(m_planMoney);
     rt.draw(m_planAmountDesc);
@@ -241,7 +276,7 @@ void lemonade::Game::initializePlanningUi()
 
     m_planTemperature.setFont(m_font);
     m_planTemperature.setCharacterSize(24);
-    m_planTemperature.setPosition(0.7f * 1280, 0.1f * 720);
+    m_planTemperature.setPosition(0.7f * 1280, 0.1f * 720 + 15);
 
     m_planAmountDesc.setFont(m_font);
     m_planAmountDesc.setCharacterSize(24);
@@ -273,6 +308,10 @@ void lemonade::Game::initializePlanningUi()
     m_planSelectionRectangle.setSize({ 0.4f * 1280, 0.06f * 720 });
     m_planSelectionRectangle.setOrigin({ 6, 6 });
     m_planSelectionRectangle.setPosition(m_planAmountDesc.getPosition());
+
+    m_forecastTexture.loadFromFile("Weather.png");
+    m_planForecastSprite.setTexture(m_forecastTexture);
+    m_planForecastSprite.setPosition(0.7f * 1280 - 72, 0.1f * 720 - 5);
 }
 
 void lemonade::Game::initializeResultsUi()
