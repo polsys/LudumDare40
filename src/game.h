@@ -75,6 +75,8 @@ namespace lemonade
         };
         State m_state = State::BeforePlanning;
 
+        sf::Sprite m_fullscreenSprite;
+
         // Helper for the Planning UI.
         void setWeatherForecast();
         // Does the job of update() in Planning phase.
@@ -94,6 +96,7 @@ namespace lemonade
         sf::RectangleShape m_planSelectionRectangle;
         sf::Texture m_forecastTexture;
         sf::Sprite m_planForecastSprite;
+        sf::Texture m_backgroundTexture;
 
         enum class PlanningInput
         {
@@ -104,7 +107,12 @@ namespace lemonade
 
 
         // Customers phase
-        // TODO
+        int m_customersFrame;
+
+        sf::Texture m_sunnyTexture;
+        sf::Texture m_cloudyTexture;
+        sf::Texture m_rainyTexture;
+        sf::Text m_priceOnStand;
 
 
         // Results phase
@@ -119,6 +127,7 @@ namespace lemonade
 
         // Ctor helper methods
         void initializePlanningUi();
+        void initializeCustomersUi();
         void initializeResultsUi();
     };
 }

@@ -8,7 +8,9 @@ lemonade::Game::Game()
 {
     m_font.loadFromFile("ComicNeue_Bold.otf");
 
+    m_fullscreenSprite.setPosition({ 0,0 });
     initializePlanningUi();
+    initializeCustomersUi();
     initializeResultsUi();
 }
 
@@ -40,6 +42,7 @@ void lemonade::Game::update()
         m_planMoney.setString(moneyToString(m_money));
         m_planAmountValue.setString(std::to_string(m_amountAvailable));
         m_planPriceValue.setString(moneyToString(m_price));
+        m_fullscreenSprite.setTexture(m_backgroundTexture);
 
         m_state = State::Planning;
         break;
@@ -48,9 +51,28 @@ void lemonade::Game::update()
         updatePlanning();
         break;
     case State::BeforeCustomers:
+    {
         calculateSales();
+
+        // Prepare the animation
+        m_priceOnStand.setString(moneyToString(m_price));
+        m_customersFrame = 0;
+        if (m_weather < 40)
+            m_fullscreenSprite.setTexture(m_rainyTexture);
+        else if (m_weather < 60)
+            m_fullscreenSprite.setTexture(m_cloudyTexture);
+        else
+            m_fullscreenSprite.setTexture(m_sunnyTexture);
+
+        m_state = State::Customers;
+        break;
+    }
     case State::Customers:
-        m_state = State::BeforeResults;
+        m_customersFrame++;
+        if (m_customersFrame > (5 * 60))
+        {
+            m_state = State::BeforeResults;
+        }
         break;
     case State::BeforeResults:
     {
@@ -61,6 +83,7 @@ void lemonade::Game::update()
         // Initialize the results UI
         m_resultSalesValue.setString(std::to_string(m_amountSold) + "/" + std::to_string(m_amountAvailable));
         m_resultProfitValue.setString(moneyToString(profit));
+        m_fullscreenSprite.setTexture(m_backgroundTexture);
 
         m_state = State::Results;
         break;
@@ -102,6 +125,10 @@ void lemonade::Game::draw(sf::RenderTarget& rt)
     {
     case State::Planning:
         drawPlanning(rt);
+        break;
+    case State::Customers:
+        rt.draw(m_fullscreenSprite);
+        rt.draw(m_priceOnStand);
         break;
     case State::Results:
         drawResults(rt);
@@ -242,6 +269,7 @@ void lemonade::Game::updatePlanning()
 
 void lemonade::Game::drawPlanning(sf::RenderTarget& rt)
 {
+    rt.draw(m_fullscreenSprite);
     rt.draw(m_planSelectionRectangle);
 
     rt.draw(m_planDay);
@@ -257,6 +285,7 @@ void lemonade::Game::drawPlanning(sf::RenderTarget& rt)
 
 void lemonade::Game::drawResults(sf::RenderTarget& rt)
 {
+    rt.draw(m_fullscreenSprite);
     rt.draw(m_resultSalesDesc);
     rt.draw(m_resultSalesValue);
     rt.draw(m_resultProfitDesc);
@@ -298,10 +327,10 @@ void lemonade::Game::initializePlanningUi()
 
     m_planHelp.setFont(m_font);
     m_planHelp.setCharacterSize(20);
-    m_planHelp.setFillColor(sf::Color(192, 192, 192, 255));
+    m_planHelp.setFillColor(sf::Color(224, 224, 224, 255));
     m_planHelp.setPosition(0.2f * 1280, 0.8f * 720);
     m_planHelp.setString("Using arrow keys, decide how much lemonade you'll have for sale today and\n"
-        "its selling price per glass. A glass of lemonade costs $0.50 to prepare.\n"
+        "the price per glass. A glass of lemonade costs $0.50 to prepare.\n"
         "Press ENTER once you are ready to start selling!");
 
     m_planSelectionRectangle.setFillColor(sf::Color(32, 32, 32, 255));
@@ -312,6 +341,20 @@ void lemonade::Game::initializePlanningUi()
     m_forecastTexture.loadFromFile("Weather.png");
     m_planForecastSprite.setTexture(m_forecastTexture);
     m_planForecastSprite.setPosition(0.7f * 1280 - 72, 0.1f * 720 - 5);
+
+    m_backgroundTexture.loadFromFile("Planning.png");
+}
+
+void lemonade::Game::initializeCustomersUi()
+{
+    m_sunnyTexture.loadFromFile("BackgroundSunny.png");
+    m_cloudyTexture.loadFromFile("BackgroundCloudy.png");
+    m_rainyTexture.loadFromFile("BackgroundRainy.png");
+
+    m_priceOnStand.setFont(m_font);
+    m_priceOnStand.setCharacterSize(36);
+    m_priceOnStand.setPosition({ 1000, 340 });
+    m_priceOnStand.setFillColor(sf::Color(54, 54, 54, 255));
 }
 
 void lemonade::Game::initializeResultsUi()
@@ -336,7 +379,7 @@ void lemonade::Game::initializeResultsUi()
 
     m_resultHelp.setFont(m_font);
     m_resultHelp.setCharacterSize(20);
-    m_resultHelp.setString("Press ENTER to continue.");
-    m_resultHelp.setFillColor(sf::Color(192, 192, 192, 255));
+    m_resultHelp.setString("Press ENTER to continue");
+    m_resultHelp.setFillColor(sf::Color(224, 224, 224, 255));
     m_resultHelp.setPosition((1280 - m_resultHelp.getLocalBounds().width) * 0.5f, 720 * 0.75f);
 }
