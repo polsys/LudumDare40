@@ -1,8 +1,11 @@
-# The Ludum Dare 40 entry by @polsys
+# (Cursed) Lemonade Stand
+*The Ludum Dare 40 entry of @polsys.*
 
-At least, there should be one someday. At the present, this is just preparation.
+Summer is at its best and lemonade is in huge demand. You have a week to sell as much lemonade as possible. The weather couldn't be nicer... but remember: *the more you have, the worse it is*...
 
 The game is written in C++14 using [SFML](https://github.com/SFML/SFML). C++ is not my strongest language, and that's exactly why I'm using it here!
+
+As a special surprise, `lemonade_stand.py` contains a rough command line version of the game! I used it to prototype the game rules. There is no parameter validation whatsoever and many things differ from the finished game.
 
 
 # Building
