@@ -14,8 +14,14 @@ lemonade::TitleScreen::TitleScreen():
 
 void lemonade::TitleScreen::update()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+    if (m_framesUntilKeyInputAllowed > 0)
+    {
+        m_framesUntilKeyInputAllowed--;
+    }
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+    {
         m_startPressed = true;
+    }
 }
 
 void lemonade::TitleScreen::draw(sf::RenderTarget& rt)

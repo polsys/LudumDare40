@@ -34,7 +34,10 @@ int main()
             game->update();
             game->draw(window);
             if (game->isGameOver())
+            {
                 game.reset(nullptr);
+                title.reset();
+            }
         }
         window.display();
     }

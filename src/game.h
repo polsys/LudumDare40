@@ -32,6 +32,8 @@ namespace lemonade
         // Number of frames between accepted key presses.
         const int KeyInterval = 10;
 
+        const int StartingMoney = 20000;
+
         bool m_gameOver = false;
         int m_keyWaitFrames = 3 * KeyInterval;
         sf::Font m_font;
@@ -40,7 +42,7 @@ namespace lemonade
         int m_day = 0;
 
         // Money, in cents
-        int m_money = 20000;
+        int m_money = StartingMoney;
 
         // Glasses of lemonade manufactured for this day
         int m_amountAvailable;
@@ -125,9 +127,22 @@ namespace lemonade
         // Does the work of draw() in Results phase.
         void drawResults(sf::RenderTarget& rt);
 
+
+        // Final Results phase
+        sf::Text m_finalDescription;
+        sf::Text m_finalProfit;
+        sf::Text m_finalHighScore;
+
+        // Does the work of draw() in FinalResults phase.
+        void drawFinalResults(sf::RenderTarget& rt);
+
+
         // Ctor helper methods
         void initializePlanningUi();
         void initializeCustomersUi();
         void initializeResultsUi();
+
+        // This should be called only once the UI should be shown.
+        void initializeFinalResultsUi();
     };
 }

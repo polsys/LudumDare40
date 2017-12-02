@@ -100,6 +100,7 @@ void lemonade::Game::update()
             if (m_day == 6)
             {
                 m_state = State::FinalResults;
+                initializeFinalResultsUi();
                 // TODO: Save highscores
                 // TODO: End up here also if out of money
             }
@@ -109,6 +110,18 @@ void lemonade::Game::update()
                 calculateWeather();
                 m_state = State::BeforePlanning;
             }
+        }
+        break;
+    }
+    case State::FinalResults:
+    {
+        if (m_keyWaitFrames > 0)
+        {
+            m_keyWaitFrames--;
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+        {
+            m_gameOver = true;
         }
         break;
     }
@@ -132,6 +145,9 @@ void lemonade::Game::draw(sf::RenderTarget& rt)
         break;
     case State::Results:
         drawResults(rt);
+        break;
+    case State::FinalResults:
+        drawFinalResults(rt);
         break;
     default:
         break;
@@ -293,6 +309,15 @@ void lemonade::Game::drawResults(sf::RenderTarget& rt)
     rt.draw(m_resultHelp);
 }
 
+void lemonade::Game::drawFinalResults(sf::RenderTarget& rt)
+{
+    rt.draw(m_fullscreenSprite);
+    rt.draw(m_finalDescription);
+    rt.draw(m_finalProfit);
+    rt.draw(m_finalHighScore);
+    rt.draw(m_resultHelp); // Press ENTER to continue
+}
+
 void lemonade::Game::initializePlanningUi()
 {
     m_planDay.setFont(m_font);
@@ -382,4 +407,22 @@ void lemonade::Game::initializeResultsUi()
     m_resultHelp.setString("Press ENTER to continue");
     m_resultHelp.setFillColor(sf::Color(224, 224, 224, 255));
     m_resultHelp.setPosition((1280 - m_resultHelp.getLocalBounds().width) * 0.5f, 720 * 0.75f);
+}
+
+void lemonade::Game::initializeFinalResultsUi()
+{
+    m_finalDescription.setFont(m_font);
+    m_finalDescription.setCharacterSize(32);
+    m_finalDescription.setString("Week's up! Total profit:");
+    m_finalDescription.setPosition((1280 - m_finalDescription.getLocalBounds().width) * 0.5f, 0.2f * 720);
+
+    m_finalProfit.setFont(m_font);
+    m_finalProfit.setCharacterSize(56);
+    m_finalProfit.setString(moneyToString(m_money - StartingMoney));
+    m_finalProfit.setPosition((1280 - m_finalProfit.getLocalBounds().width) * 0.5f, 0.3f * 720);
+
+    m_finalHighScore.setFont(m_font);
+    m_finalHighScore.setCharacterSize(32);
+    m_finalHighScore.setString("Is that a high score? I don't know!");
+    m_finalHighScore.setPosition((1280 - m_finalHighScore.getLocalBounds().width) * 0.5f, 0.5f * 720);
 }
