@@ -57,7 +57,7 @@ void lemonade::Game::update()
         }
         else if (m_customersFrame < CustomerAnimationFrames)
         {
-            // Update the animation
+            // Update the customer animation
             for (auto it = m_customers.begin() + m_customersServed; it != m_customers.end(); ++it)
             {
                 auto position = it->getPosition();
@@ -70,8 +70,37 @@ void lemonade::Game::update()
                 {
                     // Hide the customers who have gotten their lemonade
                     m_customersServed++;
+                    addParticle();
                 }
                 it->setPosition(position);
+            }
+
+            // Then update the particles
+            auto particle = m_particles.begin();
+            while (particle != m_particles.end())
+            {
+                auto position = particle->getPosition();
+                position.y--;
+                particle->setPosition(position);
+
+                // Update the animation, running at 15 FPS, i.e. every fourth frame
+                if (m_customersFrame % 4 == 0)
+                {
+                    auto textureRect = particle->getTextureRect();
+                    textureRect.left += 32;
+                    if (textureRect.left >= 256)
+                    {
+                        // Last frame passed
+                        particle = m_particles.erase(particle);
+                        continue;
+                    }
+                    else
+                    {
+                        particle->setTextureRect(textureRect);
+                    }
+                }
+
+                particle++;
             }
         }
         else if (m_customersFrame == CustomerAnimationFrames)
@@ -164,6 +193,10 @@ void lemonade::Game::draw(sf::RenderTarget& rt)
         rt.draw(m_fullscreenSprite);
         rt.draw(m_priceOnStand);
         for (auto it = m_customers.cbegin() + m_customersServed; it != m_customers.cend(); ++it)
+        {
+            rt.draw(*it);
+        }
+        for (auto it = m_particles.cbegin(); it != m_particles.cend(); ++it)
         {
             rt.draw(*it);
         }
@@ -357,6 +390,20 @@ void lemonade::Game::prepareCustomersAnimation()
         
         m_customers.push_back(customer);
     }
+
+    // Lastly, prepare the particles vector
+    m_particles.clear();
+    m_particles.reserve(m_amountSold);
+}
+
+void lemonade::Game::addParticle()
+{
+    sf::Sprite particle;
+    particle.setTexture(m_particleTexture);
+    particle.setTextureRect({ 0, 0, 32, 32 });
+    particle.setPosition({ 750.0f + ((m_customersServed * 93) % 400), 160 });
+
+    m_particles.push_back(particle);
 }
 
 void lemonade::Game::drawResults(sf::RenderTarget& rt)
@@ -438,6 +485,7 @@ void lemonade::Game::initializeCustomersUi()
     m_cloudyTexture.loadFromFile("BackgroundCloudy.png");
     m_rainyTexture.loadFromFile("BackgroundRainy.png");
     m_customerTexture.loadFromFile("People.png");
+    m_particleTexture.loadFromFile("Particles.png");
 
     m_priceOnStand.setFont(m_font);
     m_priceOnStand.setCharacterSize(36);

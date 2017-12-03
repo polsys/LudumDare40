@@ -123,11 +123,14 @@ namespace lemonade
         sf::Texture m_cloudyTexture;
         sf::Texture m_rainyTexture;
         sf::Texture m_customerTexture;
+        sf::Texture m_particleTexture;
         std::vector<sf::Sprite> m_customers;
+        std::vector<sf::Sprite> m_particles;
         int m_customersServed;
         sf::Text m_priceOnStand;
 
         void prepareCustomersAnimation();
+        void addParticle();
 
 
         // Results phase
