@@ -42,7 +42,7 @@ void lemonade::TitleScreen::update()
 {
     m_frame = (m_frame + 1) % 480;
     constexpr float TwoPi = 2 * 3.14159f;
-    auto opacity = 4.0f * std::sinf(m_frame / (480.0f) * TwoPi);
+    auto opacity = 4.0f * static_cast<float>(std::sin(m_frame / (480.0f) * TwoPi));
     opacity = std::max(std::min(opacity, 1.0f), 0.0f);
 
     m_rainySprite.setColor(sf::Color{ 255, 255, 255, static_cast<sf::Uint8>(opacity * 255) });

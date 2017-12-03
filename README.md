@@ -1,7 +1,7 @@
 # (Cursed) Lemonade Stand
 *The Ludum Dare 40 entry of @polsys.*
 
-Summer is at its best and lemonade is in huge demand. You have a week to sell as much lemonade as possible. The weather couldn't be nicer... but remember: *the more you have, the worse it is*...
+Summer is at its best and lemonade is in huge demand. You have a week to sell as much lemonade as possible. The weather couldn't be nicer... but remember: *the more you have, the worse it is*.
 
 The game is written in C++14 using [SFML](https://github.com/SFML/SFML). C++ is not my strongest language, and that's exactly why I'm using it here!
 
@@ -19,4 +19,6 @@ You'll need Visual Studio 2017 (VS2015 should work as well).
 3. Open the solution in Visual Studio and build it. The project file includes some MSBuild magic to automatically copy binary dependencies and assets to the output directory when building.
 
 ## Linux
-TBD.
+You'll need the latest `libsfml-dev` installed. Then building the game is a matter of compiling all the `.cpp` files and putting the resulting executable and the assets at the same place.
+
+As a fun challenge, this is something I didn't have time to test (RasPi default repos have old SFML). Enjoy!
