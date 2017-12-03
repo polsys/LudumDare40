@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 #include "SFML/Graphics.hpp"
 
 namespace lemonade
@@ -110,11 +110,21 @@ namespace lemonade
 
         // Customers phase
         int m_customersFrame;
+        static constexpr int CustomerPhaseFrames = 12 * 60;
+        static constexpr int CustomerAnimationFrames = 10 * 60;
+        static constexpr float CustomerQueueLength = 4000.0f;
+        static constexpr float CustomerPixelsPerFrame = (800.0f + CustomerQueueLength) / CustomerAnimationFrames;
+        static constexpr int CustomersPerDisplayedCustomer = 3;
 
         sf::Texture m_sunnyTexture;
         sf::Texture m_cloudyTexture;
         sf::Texture m_rainyTexture;
+        sf::Texture m_customerTexture;
+        std::vector<sf::Sprite> m_customers;
+        int m_customersServed;
         sf::Text m_priceOnStand;
+
+        void prepareCustomersAnimation();
 
 
         // Results phase

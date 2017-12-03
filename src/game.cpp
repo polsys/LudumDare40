@@ -1,7 +1,7 @@
 #include <iomanip>
+#include <random>
 #include <sstream>
 #include <string>
-#include <vector>
 #include "game.h"
 
 lemonade::Game::Game()
@@ -53,27 +53,48 @@ void lemonade::Game::update()
     case State::BeforeCustomers:
     {
         calculateSales();
-
-        // Prepare the animation
-        m_priceOnStand.setString(moneyToString(m_price));
-        m_customersFrame = 0;
-        if (m_weather < 40)
-            m_fullscreenSprite.setTexture(m_rainyTexture);
-        else if (m_weather < 60)
-            m_fullscreenSprite.setTexture(m_cloudyTexture);
-        else
-            m_fullscreenSprite.setTexture(m_sunnyTexture);
-
+        prepareCustomersAnimation();
         m_state = State::Customers;
         break;
     }
     case State::Customers:
+    {
         m_customersFrame++;
-        if (m_customersFrame > (5 * 60))
+        if (m_customersFrame > CustomerPhaseFrames)
         {
             m_state = State::BeforeResults;
         }
+        else if (m_customersFrame < CustomerAnimationFrames)
+        {
+            // Update the animation
+            for (auto it = m_customers.begin() + m_customersServed; it != m_customers.end(); ++it)
+            {
+                auto position = it->getPosition();
+                if (m_customersServed * CustomersPerDisplayedCustomer < m_amountAvailable)
+                {
+                    // The queue only moves when there is lemonade available
+                    position.x += CustomerPixelsPerFrame;
+                }
+                if (position.x >= 700 && position.y < 900)
+                {
+                    // Hide the customers who have gotten their lemonade
+                    m_customersServed++;
+                }
+                it->setPosition(position);
+            }
+        }
+        else if (m_customersFrame == CustomerAnimationFrames)
+        {
+            // Make everybody remaining unhappy
+            for (auto it = m_customers.begin(); it != m_customers.end(); ++it)
+            {
+                auto textureRect = it->getTextureRect();
+                textureRect.top = 350;
+                it->setTextureRect(textureRect);
+            }
+        }
         break;
+    }
     case State::BeforeResults:
     {
         // Update the money
@@ -142,6 +163,10 @@ void lemonade::Game::draw(sf::RenderTarget& rt)
     case State::Customers:
         rt.draw(m_fullscreenSprite);
         rt.draw(m_priceOnStand);
+        for (auto it = m_customers.cbegin() + m_customersServed; it != m_customers.cend(); ++it)
+        {
+            rt.draw(*it);
+        }
         break;
     case State::Results:
         drawResults(rt);
@@ -299,6 +324,40 @@ void lemonade::Game::drawPlanning(sf::RenderTarget& rt)
     rt.draw(m_planHelp);
 }
 
+void lemonade::Game::prepareCustomersAnimation()
+{
+    m_priceOnStand.setString(moneyToString(m_price));
+    m_customersFrame = 0;
+
+    // Set the background based on weather
+    if (m_weather < 40)
+        m_fullscreenSprite.setTexture(m_rainyTexture);
+    else if (m_weather < 60)
+        m_fullscreenSprite.setTexture(m_cloudyTexture);
+    else
+        m_fullscreenSprite.setTexture(m_sunnyTexture);
+
+    // The customer sprites are randomly chosen and stored in a vector
+    auto customerCount = m_potentialCustomers / CustomersPerDisplayedCustomer;
+    std::uniform_int_distribution<int> customerColor(0,7);
+    std::minstd_rand random(m_weather * 577 + customerCount);
+    auto pixelsBetweenCustomers = -CustomerQueueLength / customerCount;
+
+    m_customersServed = 0;
+    m_customers.clear();
+    m_customers.reserve(customerCount);
+    for (auto i = 0; i < customerCount; i++)
+    {
+        sf::Sprite customer;
+        customer.setTexture(m_customerTexture);
+        customer.setTextureRect(sf::IntRect(128 * customerColor(random), 0, 128, 350));
+        customer.setOrigin({ 0, 350 });
+        customer.setPosition({ -128 + pixelsBetweenCustomers * i, 580.0f });
+        
+        m_customers.push_back(customer);
+    }
+}
+
 void lemonade::Game::drawResults(sf::RenderTarget& rt)
 {
     rt.draw(m_fullscreenSprite);
@@ -375,6 +434,7 @@ void lemonade::Game::initializeCustomersUi()
     m_sunnyTexture.loadFromFile("BackgroundSunny.png");
     m_cloudyTexture.loadFromFile("BackgroundCloudy.png");
     m_rainyTexture.loadFromFile("BackgroundRainy.png");
+    m_customerTexture.loadFromFile("People.png");
 
     m_priceOnStand.setFont(m_font);
     m_priceOnStand.setCharacterSize(36);
