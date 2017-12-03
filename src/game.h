@@ -113,8 +113,8 @@ namespace lemonade
 
         // Customers phase
         int m_customersFrame;
-        static constexpr int CustomerPhaseFrames = 12 * 60;
-        static constexpr int CustomerAnimationFrames = 10 * 60;
+        static constexpr int CustomerPhaseFrames = 10 * 60;
+        static constexpr int CustomerAnimationFrames = 8 * 60;
         static constexpr float CustomerQueueLength = 4000.0f;
         static constexpr float CustomerPixelsPerFrame = (800.0f + CustomerQueueLength) / CustomerAnimationFrames;
         static constexpr int CustomersPerDisplayedCustomer = 3;

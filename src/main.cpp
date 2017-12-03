@@ -1,6 +1,7 @@
 #include <memory>
 #include "SFML/Graphics.hpp"
 #include "game.h"
+#include "highscore.h"
 #include "titlescreen.h"
 
 int main()
@@ -8,6 +9,8 @@ int main()
     sf::RenderWindow window(sf::VideoMode(1280, 720), "(Cursed) Lemonade Stand", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false); // Mouse is not used in this game
+
+    lemonade::HighScores::initializeHighScores();
 
     // The title screen always exists, whereas the gameplay screen is re-created every time the game is started
     lemonade::TitleScreen title;

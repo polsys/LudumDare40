@@ -21,12 +21,14 @@ namespace lemonade
         bool shouldStartGame() const { return m_startPressed; }
 
         // Call this when re-showing this screen.
-        void reset() { m_startPressed = false; m_framesUntilKeyInputAllowed = 20; }
+        void reset();
 
     private:
         bool m_startPressed = false;
         int m_framesUntilKeyInputAllowed = 20;
         sf::Font m_font;
-        sf::Text m_descriptionText;
+        sf::Text m_pressEnterText;
+        sf::Text m_copyrightText;
+        sf::Text m_highScoreText;
     };
 }

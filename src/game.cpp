@@ -1,8 +1,8 @@
-#include <iomanip>
 #include <random>
-#include <sstream>
 #include <string>
 #include "game.h"
+#include "highscore.h"
+#include "moneytostring.h"
 
 lemonade::Game::Game()
 {
@@ -16,15 +16,6 @@ lemonade::Game::Game()
 
 static const std::vector<sf::String> k_dayNames =
     { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-
-// Represents money (in cents) as a string.
-sf::String moneyToString(int moneyInCents)
-{
-    std::stringstream str;
-    str << "$" << std::fixed << std::setprecision(2) << (moneyInCents / 100.0f);
-
-    return str.str();
-}
 
 void lemonade::Game::update()
 {
@@ -131,8 +122,8 @@ void lemonade::Game::update()
             if (m_day == 6)
             {
                 m_state = State::FinalResults;
+                HighScores::addScore(m_money);
                 initializeFinalResultsUi();
-                // TODO: Save highscores
                 // TODO: End up here also if out of money
             }
             else
@@ -495,16 +486,21 @@ void lemonade::Game::initializeFinalResultsUi()
 {
     m_finalDescription.setFont(m_font);
     m_finalDescription.setCharacterSize(32);
-    m_finalDescription.setString("Week's up! Total profit:");
+    m_finalDescription.setString("Week's up! Final money:");
     m_finalDescription.setPosition((1280 - m_finalDescription.getLocalBounds().width) * 0.5f, 0.2f * 720);
 
     m_finalProfit.setFont(m_font);
     m_finalProfit.setCharacterSize(56);
-    m_finalProfit.setString(moneyToString(m_money - StartingMoney));
+    m_finalProfit.setString(moneyToString(m_money));
     m_finalProfit.setPosition((1280 - m_finalProfit.getLocalBounds().width) * 0.5f, 0.3f * 720);
 
     m_finalHighScore.setFont(m_font);
     m_finalHighScore.setCharacterSize(32);
-    m_finalHighScore.setString("Is that a high score? I don't know!");
+    if (HighScores::getHighScores().high == m_money)
+        m_finalHighScore.setString("That's a new record!");
+    else if (HighScores::getHighScores().low == m_money)
+        m_finalHighScore.setString("That's record... low!");
+    else
+        m_finalHighScore.setString("");
     m_finalHighScore.setPosition((1280 - m_finalHighScore.getLocalBounds().width) * 0.5f, 0.5f * 720);
 }
