@@ -46,7 +46,7 @@
     <TargetName>LemonadeStand</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>LD40</TargetName>
+    <TargetName>LemonadeStand</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -58,7 +58,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\SFML-2.4.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-main-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -77,7 +77,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\SFML-2.4.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>sfml-main.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -100,13 +100,13 @@
     <PropertyGroup>
       <SfmlDllDir>$(SolutionDir)\Dependencies\SFML-2.4.2\bin\</SfmlDllDir>
     </PropertyGroup>
-    <Copy SourceFiles="$(SfmlDllDir)openal32.dll;$(SfmlDllDir)sfml-audio-d-2.dll;$(SfmlDllDir)sfml-graphics-d-2.dll;$(SfmlDllDir)sfml-system-d-2.dll;$(SfmlDllDir)sfml-window-d-2.dll;" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(SfmlDllDir)sfml-graphics-d-2.dll;$(SfmlDllDir)sfml-system-d-2.dll;$(SfmlDllDir)sfml-window-d-2.dll;" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="CopyDllsRelease" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PropertyGroup>
       <SfmlDllDir>$(SolutionDir)\Dependencies\SFML-2.4.2\bin\</SfmlDllDir>
     </PropertyGroup>
-    <Copy SourceFiles="$(SfmlDllDir)openal32.dll;$(SfmlDllDir)sfml-audio-2.dll;$(SfmlDllDir)sfml-graphics-2.dll;$(SfmlDllDir)sfml-system-2.dll;$(SfmlDllDir)sfml-window-2.dll;" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(SfmlDllDir)sfml-graphics-2.dll;$(SfmlDllDir)sfml-system-2.dll;$(SfmlDllDir)sfml-window-2.dll;" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
   <!-- Copy all the assets -->
   <Target Name="CopyAssets" AfterTargets="Build">
