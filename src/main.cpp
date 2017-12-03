@@ -6,7 +6,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1280, 720), "(Cursed) Lemonade Stand", sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(1280, 720), "Lemonade Stand (a bit cursed one, maybe)", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false); // Mouse is not used in this game
 

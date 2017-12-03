@@ -26,9 +26,18 @@ namespace lemonade
     private:
         bool m_startPressed = false;
         int m_framesUntilKeyInputAllowed = 20;
+        int m_frame = 240; // Start at clear sky background
+
         sf::Font m_font;
         sf::Text m_pressEnterText;
         sf::Text m_copyrightText;
         sf::Text m_highScoreText;
+
+        sf::Texture m_logoTexture;
+        sf::Sprite m_logo;
+        sf::Texture m_sunnyTexture;
+        sf::Sprite m_sunnySprite;
+        sf::Texture m_rainyTexture;
+        sf::Sprite m_rainySprite;
     };
 }
