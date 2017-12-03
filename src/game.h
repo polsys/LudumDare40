@@ -131,6 +131,8 @@ namespace lemonade
 
         void prepareCustomersAnimation();
         void addParticle();
+        void updateCustomers();
+        void drawCustomers(sf::RenderTarget& rt);
 
 
         // Results phase

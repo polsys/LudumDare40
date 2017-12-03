@@ -50,69 +50,7 @@ void lemonade::Game::update()
     }
     case State::Customers:
     {
-        m_customersFrame++;
-        if (m_customersFrame > CustomerPhaseFrames)
-        {
-            m_state = State::BeforeResults;
-        }
-        else if (m_customersFrame < CustomerAnimationFrames)
-        {
-            // Update the customer animation
-            for (auto it = m_customers.begin() + m_customersServed; it != m_customers.end(); ++it)
-            {
-                auto position = it->getPosition();
-                if (m_customersServed * CustomersPerDisplayedCustomer < m_amountAvailable)
-                {
-                    // The queue only moves when there is lemonade available
-                    position.x += CustomerPixelsPerFrame;
-                }
-                if (position.x >= 700 && position.y < 900)
-                {
-                    // Hide the customers who have gotten their lemonade
-                    m_customersServed++;
-                    addParticle();
-                }
-                it->setPosition(position);
-            }
-
-            // Then update the particles
-            auto particle = m_particles.begin();
-            while (particle != m_particles.end())
-            {
-                auto position = particle->getPosition();
-                position.y--;
-                particle->setPosition(position);
-
-                // Update the animation, running at 15 FPS, i.e. every fourth frame
-                if (m_customersFrame % 4 == 0)
-                {
-                    auto textureRect = particle->getTextureRect();
-                    textureRect.left += 32;
-                    if (textureRect.left >= 256)
-                    {
-                        // Last frame passed
-                        particle = m_particles.erase(particle);
-                        continue;
-                    }
-                    else
-                    {
-                        particle->setTextureRect(textureRect);
-                    }
-                }
-
-                particle++;
-            }
-        }
-        else if (m_customersFrame == CustomerAnimationFrames)
-        {
-            // Make everybody remaining unhappy
-            for (auto it = m_customers.begin(); it != m_customers.end(); ++it)
-            {
-                auto textureRect = it->getTextureRect();
-                textureRect.top = 350;
-                it->setTextureRect(textureRect);
-            }
-        }
+        updateCustomers();
         break;
     }
     case State::BeforeResults:
@@ -190,16 +128,7 @@ void lemonade::Game::draw(sf::RenderTarget& rt)
         drawPlanning(rt);
         break;
     case State::Customers:
-        rt.draw(m_fullscreenSprite);
-        rt.draw(m_priceOnStand);
-        for (auto it = m_customers.cbegin() + m_customersServed; it != m_customers.cend(); ++it)
-        {
-            rt.draw(*it);
-        }
-        for (auto it = m_particles.cbegin(); it != m_particles.cend(); ++it)
-        {
-            rt.draw(*it);
-        }
+        drawCustomers(rt);
         break;
     case State::Results:
         drawResults(rt);
@@ -404,6 +333,91 @@ void lemonade::Game::addParticle()
     particle.setPosition({ 750.0f + ((m_customersServed * 93) % 400), 160 });
 
     m_particles.push_back(particle);
+}
+
+void lemonade::Game::updateCustomers()
+{
+    m_customersFrame++;
+    if (m_customersFrame > CustomerPhaseFrames)
+    {
+        m_state = State::BeforeResults;
+    }
+    else if (m_customersFrame < CustomerAnimationFrames)
+    {
+        // Update the customer animation
+        auto customer = m_customers.begin();
+        while (customer != m_customers.end())
+        {
+            auto position = customer->getPosition();
+            if (m_customersServed * CustomersPerDisplayedCustomer < m_amountAvailable)
+            {
+                // The queue only moves when there is lemonade available
+                position.x += CustomerPixelsPerFrame;
+            }
+            if (position.x >= 700 && position.y < 900)
+            {
+                // Hide the customers who have gotten their lemonade
+                m_customersServed++;
+                addParticle();
+                customer = m_customers.erase(customer);
+                continue;
+            }
+            customer->setPosition(position);
+            customer++;
+        }
+
+        // Then update the particles
+        auto particle = m_particles.begin();
+        while (particle != m_particles.end())
+        {
+            auto position = particle->getPosition();
+            position.y--;
+            particle->setPosition(position);
+
+            // Update the animation, running at 15 FPS, i.e. every fourth frame
+            if (m_customersFrame % 4 == 0)
+            {
+                auto textureRect = particle->getTextureRect();
+                textureRect.left += 32;
+                if (textureRect.left >= 256)
+                {
+                    // Last frame passed
+                    particle = m_particles.erase(particle);
+                    continue;
+                }
+                else
+                {
+                    particle->setTextureRect(textureRect);
+                }
+            }
+
+            particle++;
+        }
+    }
+    else if (m_customersFrame == CustomerAnimationFrames)
+    {
+        // Make everybody remaining unhappy
+        for (auto it = m_customers.begin(); it != m_customers.end(); ++it)
+        {
+            auto textureRect = it->getTextureRect();
+            textureRect.top = 350;
+            it->setTextureRect(textureRect);
+        }
+    }
+}
+
+void lemonade::Game::drawCustomers(sf::RenderTarget& rt)
+{
+    rt.draw(m_fullscreenSprite);
+    rt.draw(m_priceOnStand);
+    for (auto it = m_customers.cbegin(); it != m_customers.cend(); ++it)
+    {
+        rt.draw(*it);
+    }
+    for (auto it = m_particles.cbegin(); it != m_particles.cend(); ++it)
+    {
+        rt.draw(*it);
+    }
 }
 
 void lemonade::Game::drawResults(sf::RenderTarget& rt)
