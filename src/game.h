@@ -61,6 +61,9 @@ namespace lemonade
         // Word-of-mouth factor.
         int m_repeatCustomers = 0;
 
+        // The number of repeat customers gained or lost this time.
+        int m_repeatCustomersThisDay = 0;
+
         // How many people show up at the stand today.
         // This is greater than amount sold if there isn't enough lemonade for everybody
         int m_potentialCustomers = 0;
@@ -132,6 +135,8 @@ namespace lemonade
         sf::Text m_resultSalesValue;
         sf::Text m_resultProfitDesc;
         sf::Text m_resultProfitValue;
+        sf::Text m_resultCustomersDesc;
+        sf::Text m_resultCustomersValue;
         sf::Text m_resultHelp;
 
         // Does the work of draw() in Results phase.

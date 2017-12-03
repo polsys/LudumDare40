@@ -104,6 +104,16 @@ void lemonade::Game::update()
         // Initialize the results UI
         m_resultSalesValue.setString(std::to_string(m_amountSold) + "/" + std::to_string(m_amountAvailable));
         m_resultProfitValue.setString(moneyToString(profit));
+        if (m_repeatCustomersThisDay < -20)
+            m_resultCustomersValue.setString("Lost much");
+        else if (m_repeatCustomersThisDay < -3)
+            m_resultCustomersValue.setString("Lost some");
+        else if (m_repeatCustomersThisDay > 20)
+            m_resultCustomersValue.setString("Gained much");
+        else if (m_repeatCustomersThisDay > 3)
+            m_resultCustomersValue.setString("Gained some");
+        else
+            m_resultCustomersValue.setString("No change");
         m_fullscreenSprite.setTexture(m_backgroundTexture);
 
         m_state = State::Results;
@@ -203,7 +213,8 @@ void lemonade::Game::calculateSales()
     // This is tuned to be +50% at $0.25 and go down 10% per $0.25
     // The total number of repeat customers is allowed to be negative
     auto repeatFactor = (-0.004f * m_price) + 0.6f;
-    m_repeatCustomers += static_cast<int>(std::round(repeatFactor * m_amountSold));
+    m_repeatCustomersThisDay = static_cast<int>(std::round(repeatFactor * m_amountSold));
+    m_repeatCustomers += m_repeatCustomersThisDay;
 }
 
 void lemonade::Game::calculateWeather()
@@ -365,6 +376,8 @@ void lemonade::Game::drawResults(sf::RenderTarget& rt)
     rt.draw(m_resultSalesValue);
     rt.draw(m_resultProfitDesc);
     rt.draw(m_resultProfitValue);
+    rt.draw(m_resultCustomersDesc);
+    rt.draw(m_resultCustomersValue);
     rt.draw(m_resultHelp);
 }
 
@@ -446,21 +459,30 @@ void lemonade::Game::initializeResultsUi()
 {
     m_resultSalesDesc.setFont(m_font);
     m_resultSalesDesc.setCharacterSize(32);
-    m_resultSalesDesc.setPosition(0.35f * 1280, 0.4f * 720);
+    m_resultSalesDesc.setPosition(0.35f * 1280, 0.3f * 720);
     m_resultSalesDesc.setString("Glasses sold:");
 
     m_resultSalesValue.setFont(m_font);
     m_resultSalesValue.setCharacterSize(32);
-    m_resultSalesValue.setPosition(0.55f * 1280, 0.4f * 720);
+    m_resultSalesValue.setPosition(0.55f * 1280, 0.3f * 720);
 
     m_resultProfitDesc.setFont(m_font);
     m_resultProfitDesc.setCharacterSize(32);
-    m_resultProfitDesc.setPosition(0.35f * 1280, 0.5f * 720);
+    m_resultProfitDesc.setPosition(0.35f * 1280, 0.4f * 720);
     m_resultProfitDesc.setString("Profit:");
 
     m_resultProfitValue.setFont(m_font);
     m_resultProfitValue.setCharacterSize(32);
-    m_resultProfitValue.setPosition(0.55f * 1280, 0.5f * 720);
+    m_resultProfitValue.setPosition(0.55f * 1280, 0.4f * 720);
+
+    m_resultCustomersDesc.setFont(m_font);
+    m_resultCustomersDesc.setCharacterSize(32);
+    m_resultCustomersDesc.setPosition(0.35f * 1280, 0.5f * 720);
+    m_resultCustomersDesc.setString("Popularity:");
+
+    m_resultCustomersValue.setFont(m_font);
+    m_resultCustomersValue.setCharacterSize(24);
+    m_resultCustomersValue.setPosition(0.55f * 1280, 0.5f * 720 + 8);
 
     m_resultHelp.setFont(m_font);
     m_resultHelp.setCharacterSize(20);
