@@ -31,28 +31,25 @@ void lemonade::Game::update()
         m_planDay.setString(k_dayNames[m_day]);
         setWeatherForecast();
         m_planMoney.setString(moneyToString(m_money));
-        m_planAmountValue.setString(std::to_string(m_amountAvailable));
+        m_planAmountValue.setString(std::to_string(m_amountAvailable) +
+            " (" + moneyToString(CostPerGlass * m_amountAvailable) + ")");
         m_planPriceValue.setString(moneyToString(m_price));
         m_fullscreenSprite.setTexture(m_backgroundTexture);
 
         m_state = State::Planning;
-        break;
+        // Fallthrough
     }
     case State::Planning:
         updatePlanning();
         break;
     case State::BeforeCustomers:
-    {
         calculateSales();
         prepareCustomersAnimation();
         m_state = State::Customers;
-        break;
-    }
+        // Fallthrough
     case State::Customers:
-    {
         updateCustomers();
         break;
-    }
     case State::BeforeResults:
     {
         // Update the money
@@ -75,7 +72,7 @@ void lemonade::Game::update()
         m_fullscreenSprite.setTexture(m_backgroundTexture);
 
         m_state = State::Results;
-        break;
+        // Fallthrough
     }
     case State::Results:
     {
@@ -230,13 +227,15 @@ void lemonade::Game::updatePlanning()
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && (m_amountAvailable > 10))
         {
             m_amountAvailable -= 10;
-            m_planAmountValue.setString(std::to_string(m_amountAvailable));
+            m_planAmountValue.setString(std::to_string(m_amountAvailable) +
+                " (" + moneyToString(CostPerGlass * m_amountAvailable) + ")");
             m_keyWaitFrames = KeyInterval;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && (m_money >= ((m_amountAvailable + 10) * CostPerGlass)))
         {
             m_amountAvailable += 10;
-            m_planAmountValue.setString(std::to_string(m_amountAvailable));
+            m_planAmountValue.setString(std::to_string(m_amountAvailable) +
+                " (" + moneyToString(CostPerGlass * m_amountAvailable) + ")");
             m_keyWaitFrames = KeyInterval;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
@@ -364,7 +363,9 @@ void lemonade::Game::updateCustomers()
         }
 
         // Skip to the end of the animation once there is no more lemonade
-        if (m_customersServed * CustomersPerDisplayedCustomer >= m_amountAvailable)
+        // or nobody is there to buy any lemonade
+        if (m_customersServed * CustomersPerDisplayedCustomer >= m_amountAvailable ||
+            m_amountSold == 0)
         {
             m_customersFrame = CustomerAnimationFrames - 1;
         }
@@ -460,7 +461,7 @@ void lemonade::Game::initializePlanningUi()
 
     m_planAmountDesc.setFont(m_font);
     m_planAmountDesc.setCharacterSize(24);
-    m_planAmountDesc.setPosition(0.3f * 1280, 0.4f * 720);
+    m_planAmountDesc.setPosition(0.28f * 1280, 0.4f * 720);
     m_planAmountDesc.setString("Amount:");
 
     m_planAmountValue.setFont(m_font);
@@ -469,7 +470,7 @@ void lemonade::Game::initializePlanningUi()
 
     m_planPriceDesc.setFont(m_font);
     m_planPriceDesc.setCharacterSize(24);
-    m_planPriceDesc.setPosition(0.3f * 1280, 0.5f * 720);
+    m_planPriceDesc.setPosition(0.28f * 1280, 0.5f * 720);
     m_planPriceDesc.setString("Price:");
 
     m_planPriceValue.setFont(m_font);
@@ -485,7 +486,7 @@ void lemonade::Game::initializePlanningUi()
         "Press ENTER once you are ready to start selling!");
 
     m_planSelectionRectangle.setFillColor(sf::Color(32, 32, 32, 255));
-    m_planSelectionRectangle.setSize({ 0.4f * 1280, 0.06f * 720 });
+    m_planSelectionRectangle.setSize({ 0.47f * 1280, 0.06f * 720 });
     m_planSelectionRectangle.setOrigin({ 6, 6 });
     m_planSelectionRectangle.setPosition(m_planAmountDesc.getPosition());
 
