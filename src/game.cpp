@@ -338,6 +338,7 @@ void lemonade::Game::addParticle()
 void lemonade::Game::updateCustomers()
 {
     m_customersFrame++;
+
     if (m_customersFrame > CustomerPhaseFrames)
     {
         m_state = State::BeforeResults;
@@ -349,11 +350,7 @@ void lemonade::Game::updateCustomers()
         while (customer != m_customers.end())
         {
             auto position = customer->getPosition();
-            if (m_customersServed * CustomersPerDisplayedCustomer < m_amountAvailable)
-            {
-                // The queue only moves when there is lemonade available
-                position.x += CustomerPixelsPerFrame;
-            }
+            position.x += CustomerPixelsPerFrame;
             if (position.x >= 700 && position.y < 900)
             {
                 // Hide the customers who have gotten their lemonade
@@ -366,32 +363,10 @@ void lemonade::Game::updateCustomers()
             customer++;
         }
 
-        // Then update the particles
-        auto particle = m_particles.begin();
-        while (particle != m_particles.end())
+        // Skip to the end of the animation once there is no more lemonade
+        if (m_customersServed * CustomersPerDisplayedCustomer >= m_amountAvailable)
         {
-            auto position = particle->getPosition();
-            position.y--;
-            particle->setPosition(position);
-
-            // Update the animation, running at 15 FPS, i.e. every fourth frame
-            if (m_customersFrame % 4 == 0)
-            {
-                auto textureRect = particle->getTextureRect();
-                textureRect.left += 32;
-                if (textureRect.left >= 256)
-                {
-                    // Last frame passed
-                    particle = m_particles.erase(particle);
-                    continue;
-                }
-                else
-                {
-                    particle->setTextureRect(textureRect);
-                }
-            }
-
-            particle++;
+            m_customersFrame = CustomerAnimationFrames - 1;
         }
     }
     else if (m_customersFrame == CustomerAnimationFrames)
@@ -403,6 +378,34 @@ void lemonade::Game::updateCustomers()
             textureRect.top = 350;
             it->setTextureRect(textureRect);
         }
+    }
+
+    // Then update the particles
+    auto particle = m_particles.begin();
+    while (particle != m_particles.end())
+    {
+        auto position = particle->getPosition();
+        position.y--;
+        particle->setPosition(position);
+
+        // Update the animation, running at 15 FPS, i.e. every fourth frame
+        if (m_customersFrame % 4 == 0)
+        {
+            auto textureRect = particle->getTextureRect();
+            textureRect.left += 32;
+            if (textureRect.left >= 256)
+            {
+                // Last frame passed
+                particle = m_particles.erase(particle);
+                continue;
+            }
+            else
+            {
+                particle->setTextureRect(textureRect);
+            }
+        }
+
+        particle++;
     }
 }
 
