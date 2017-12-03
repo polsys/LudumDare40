@@ -58,6 +58,9 @@ namespace lemonade
         // Not restricted to between these values!
         int m_weather = 80;
 
+        // If true, this day a tornado will trash the place.
+        bool m_tornado = false;
+
         // Word-of-mouth factor.
         int m_repeatCustomers = 0;
 
@@ -118,12 +121,16 @@ namespace lemonade
         static constexpr float CustomerQueueLength = 4000.0f;
         static constexpr float CustomerPixelsPerFrame = (800.0f + CustomerQueueLength) / CustomerAnimationFrames;
         static constexpr int CustomersPerDisplayedCustomer = 3;
+        static constexpr float TornadoStartX = -800;
+        static constexpr float TornadoPixelsPerFrame = (550.0f - TornadoStartX) / CustomerPhaseFrames;
 
         sf::Texture m_sunnyTexture;
         sf::Texture m_cloudyTexture;
         sf::Texture m_rainyTexture;
         sf::Texture m_customerTexture;
         sf::Texture m_particleTexture;
+        sf::Texture m_tornadoTexture;
+        sf::Sprite m_tornadoSprite;
         std::vector<sf::Sprite> m_customers;
         std::vector<sf::Sprite> m_particles;
         int m_customersServed;

@@ -54,6 +54,8 @@ void lemonade::Game::update()
     {
         // Update the money
         auto profit = (m_price * m_amountSold) - (CostPerGlass * m_amountAvailable);
+        if (m_tornado)
+            profit -= 20000;
         m_money += profit;
 
         // Initialize the results UI
@@ -173,6 +175,9 @@ void lemonade::Game::calculateWeather()
     //    - weather level 100 at 0 people
     //    - weather level 0 at 200 people
     m_weather = static_cast<int>(std::round(100 - 0.5f * m_potentialCustomers));
+
+    // Sell too greedily and...
+    m_tornado = (m_weather <= -100);
 }
 
 void lemonade::Game::setWeatherForecast()
@@ -299,6 +304,12 @@ void lemonade::Game::prepareCustomersAnimation()
     else
         m_fullscreenSprite.setTexture(m_sunnyTexture);
 
+    if (m_tornado)
+    {
+        m_tornadoSprite.setTextureRect(sf::IntRect(0, 0, 512, 640));
+        m_tornadoSprite.setPosition({ TornadoStartX, 0 });
+    }
+
     // The customer sprites are randomly chosen and stored in a vector
     auto customerCount = m_potentialCustomers / CustomersPerDisplayedCustomer;
     std::uniform_int_distribution<int> customerColor(0,7);
@@ -363,9 +374,7 @@ void lemonade::Game::updateCustomers()
         }
 
         // Skip to the end of the animation once there is no more lemonade
-        // or nobody is there to buy any lemonade
-        if (m_customersServed * CustomersPerDisplayedCustomer >= m_amountAvailable ||
-            m_amountSold == 0)
+        if (m_customersServed * CustomersPerDisplayedCustomer >= m_amountAvailable)
         {
             m_customersFrame = CustomerAnimationFrames - 1;
         }
@@ -408,6 +417,18 @@ void lemonade::Game::updateCustomers()
 
         particle++;
     }
+
+    // Oh, and there may be a tornado
+    if (m_tornado)
+    {
+        auto position = m_tornadoSprite.getPosition();
+        position.x += TornadoPixelsPerFrame;
+        m_tornadoSprite.setPosition(position);
+
+        // Animated at 15 FPS, i.e. once per four frames
+        auto frame = (m_customersFrame % 16) / 4;
+        m_tornadoSprite.setTextureRect(sf::IntRect(frame * 512, 0, 512, 640));
+    }
 }
 
 void lemonade::Game::drawCustomers(sf::RenderTarget& rt)
@@ -421,6 +442,10 @@ void lemonade::Game::drawCustomers(sf::RenderTarget& rt)
     for (auto it = m_particles.cbegin(); it != m_particles.cend(); ++it)
     {
         rt.draw(*it);
+    }
+    if (m_tornado)
+    {
+        rt.draw(m_tornadoSprite);
     }
 }
 
@@ -504,6 +529,9 @@ void lemonade::Game::initializeCustomersUi()
     m_rainyTexture.loadFromFile("BackgroundRainy.png");
     m_customerTexture.loadFromFile("People.png");
     m_particleTexture.loadFromFile("Particles.png");
+    m_tornadoTexture.loadFromFile("Tornado.png");
+
+    m_tornadoSprite.setTexture(m_tornadoTexture);
 
     m_priceOnStand.setFont(m_font);
     m_priceOnStand.setCharacterSize(36);
