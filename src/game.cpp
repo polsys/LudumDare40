@@ -119,12 +119,11 @@ void lemonade::Game::update()
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
         {
             m_keyWaitFrames = KeyInterval * 2;
-            if (m_day == 6)
+            if (m_day == 6 || m_money <= 0)
             {
                 m_state = State::FinalResults;
                 HighScores::addScore(m_money);
                 initializeFinalResultsUi();
-                // TODO: End up here also if out of money
             }
             else
             {
@@ -486,7 +485,14 @@ void lemonade::Game::initializeFinalResultsUi()
 {
     m_finalDescription.setFont(m_font);
     m_finalDescription.setCharacterSize(32);
-    m_finalDescription.setString("Week's up! Final money:");
+    if (m_money <= 0)
+    {
+        m_finalDescription.setString("Your investment is now worth:");
+    }
+    else
+    {
+        m_finalDescription.setString("Week's up! Final money:");
+    }
     m_finalDescription.setPosition((1280 - m_finalDescription.getLocalBounds().width) * 0.5f, 0.2f * 720);
 
     m_finalProfit.setFont(m_font);
